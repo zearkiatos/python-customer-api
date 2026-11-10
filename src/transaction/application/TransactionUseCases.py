@@ -1,8 +1,6 @@
-
-from ...transaction.application.dto.transaction_response import TransactionResponse
-from ...transaction.application.dto.transaction_request import TransactionRequest
-from ...transaction.application.mapper.TransactionMapper import TransactionMapper
-
+from src.transaction.application.dto.transaction_response import TransactionResponse
+from src.transaction.application.dto.transaction_request import TransactionRequest
+from src.transaction.application.mapper import TransactionMapper
 class TransactionUseCases:
     def __init__(self, transaction_input_port):
         self.transaction_input_port = transaction_input_port

@@ -15,7 +15,6 @@ async def create_customer(customer: CustomerRequest):
 
 @app.post('/transactions')
 async def create_transaction(transaction: TransactionRequest):
-    
     transaction_use_cases = TransactionUseCases(None)
     return transaction_use_cases.create_transaction(transaction)
 
