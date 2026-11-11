@@ -6,3 +6,4 @@ class InvoiceResponse(BaseModel):
     name: str
     customer_id: str
     transactions: list[str]
+    total: int

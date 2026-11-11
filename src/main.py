@@ -4,6 +4,7 @@ from src.customer.application.dto.customer_request import CustomerRequest
 from src.invoice.application.dto.invoice_request import InvoiceRequest
 from src.transaction.application.dto.transaction_request import TransactionRequest
 from src.transaction.application.TransactionUseCases import TransactionUseCases
+from src.invoice.infrastructure.adapters.transaction_lookup_adapter import TransactionLookupAdapter
 from src.invoice.application.InvoiceUseCases import InvoiceUseCases
 
 
@@ -20,5 +21,5 @@ async def create_transaction(transaction: TransactionRequest):
 
 @app.post('/invoices')
 async def create_invoice(invoice: InvoiceRequest):
-    invoice_use_cases = InvoiceUseCases(None)
+    invoice_use_cases = InvoiceUseCases(None,TransactionLookupAdapter(TransactionUseCases(None)))
     return invoice_use_cases.create_invoice(invoice)

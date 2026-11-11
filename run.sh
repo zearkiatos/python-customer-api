@@ -49,4 +49,15 @@ podman_up () {
 
 podman_down () {
     podman-compose down
+    podman-compose down
+}
+
+kube_local_up () {
+    kubectl apply -f kubernetes/local/services.yaml
+    kubectl apply -f kubernetes/local/deployments.yaml
+}
+
+kube_local_down () {
+    kubectl delete -f kubernetes/local/services.yaml
+    kubectl delete -f kubernetes/local/deployments.yaml
 }

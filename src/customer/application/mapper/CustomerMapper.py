@@ -10,7 +10,7 @@ def request_to_domain(request: CustomerRequest) -> Customer:
         id=str(id),
         name=request.name,
         description=request.description,
-        email=request.email,
+        email=str(request.email),
         age=request.age
     )
 

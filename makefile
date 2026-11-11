@@ -37,3 +37,11 @@ podman-up:
 
 podman-down:
 	podman-compose down
+
+kube-local-up:
+	kubectl apply -f kubernetes/local/services.yaml
+	kubectl apply -f kubernetes/local/deployments.yaml
+
+kube-local-down:
+	kubectl delete -f kubernetes/local/services.yaml
+	kubectl delete -f kubernetes/local/deployments.yaml

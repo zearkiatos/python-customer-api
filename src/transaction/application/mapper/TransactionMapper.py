@@ -15,6 +15,6 @@ def request_to_domain(request: TransactionRequest) -> Transaction:
 def domain_to_response(domain: Transaction) -> TransactionResponse:
     return TransactionResponse(
         id=domain.id,
-        amount=domain.amount,
+        amount=str(domain.amount),
         description=domain.description
     )
