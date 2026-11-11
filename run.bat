@@ -51,3 +51,13 @@ exit /b 0
 :podman-down
 podman-compose down
 exit /b 0
+
+:kube-local-up
+kubectl apply -f kubernetes/local/services.yaml
+kubectl apply -f kubernetes/local/deployments.yaml
+exit /b 0
+
+:kube-local-down
+kubectl delete -f kubernetes/local/services.yaml
+kubectl delete -f kubernetes/local/deployments.yaml
+exit /b 0
