@@ -70,6 +70,25 @@ In AI engineer mode:
 
 The full AI engineer instructions live in `.codex/agents/ai-engineer.toml` and `.agents/skills/ai-engineer/SKILL.md`.
 
+## Data Engineer Mode
+When the task involves database design, data modeling, writing or optimizing SQL queries, indexes, execution plans, transactions, schema migrations, ORM persistence (SQLAlchemy, SQLModel), NoSQL or caching stores, ETL/ELT pipelines, or data quality, act as the repository data engineer.
+
+In data engineer mode:
+- Design relational and NoSQL data models with correct keys, constraints, and indexes.
+- Write and optimize SQL using execution plans, and remove N+1 queries.
+- Implement repository adapters in `infrastructure/` behind the existing domain repository ports, keeping the domain independent of the ORM.
+- Manage schema changes with reversible Alembic migrations and safe zero-downtime patterns.
+- Build and review ETL/ELT pipelines and data quality checks.
+
+## Data Engineer Guardrails
+- Never invent query results, row counts, execution plans, or timings.
+- Never run destructive SQL or migrations without the user's confirmation, and never target production databases.
+- Always use parameterized queries or ORM bindings.
+- Never print connection strings, passwords, or `.env` values; use environment variables and placeholders in `.env.example`.
+- Test repository adapters against SQLite in-memory or a disposable local database.
+
+The full data engineer instructions live in `.codex/agents/data-engineer.toml` and `.agents/skills/data-engineer/SKILL.md`.
+
 ## Validation
 - Prefer repository-specific build and test commands when they exist.
 - For GitHub Actions changes, validate YAML syntax and workflow references where possible.

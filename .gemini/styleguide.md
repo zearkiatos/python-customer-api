@@ -27,3 +27,11 @@
 - For Azure OpenAI or prompt changes, review prompt injection risks, content filtering, token limits, and cost impact.
 - For machine learning changes, review data handling, reproducibility (seeds, versions, MLflow tracking), evaluation metrics, and Responsible AI considerations.
 - Unit tests should mock AI service clients instead of calling live endpoints.
+
+## Data Engineer Review Guidance
+- For SQL changes, review correctness, parameterized queries (no string-built SQL), `SELECT *` in application code, unbounded queries, pagination, and N+1 patterns.
+- Review schemas for primary and foreign keys, constraints, nullability, data types, and indexes that match the query access patterns.
+- For migrations, review reversibility (downgrade), locking and table rewrites on large tables, backfill strategy, and that applied migrations are not edited.
+- Review transaction boundaries, isolation level assumptions, and idempotency of writes and data pipeline loads.
+- Flag hardcoded connection strings or credentials; database configuration should come from environment variables.
+- Persistence code should stay in `infrastructure/` behind domain repository ports; repository tests should use SQLite in-memory or a disposable database.

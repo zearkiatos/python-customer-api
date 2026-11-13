@@ -7,6 +7,7 @@ This folder configures Gemini-related behavior for this repository.
 - `agents/python-developer.md`: Python Developer mode for FastAPI application code, software architecture, and test-driven development with pytest.
 - `agents/sre-engineer.md`: SRE Engineer mode for Docker, Kubernetes, GitHub Actions, Azure, and deployment work.
 - `agents/ai-engineer.md`: AI Engineer mode for Azure AI Services (Computer Vision, OCR, Language, Speech, Azure OpenAI) and machine learning tooling (Azure Machine Learning, ML.NET, ONNX Runtime, MLflow).
+- `agents/data-engineer.md`: Data Engineer mode for databases and queries: data modeling, SQL optimization, indexing, transactions, Alembic migrations, SQLAlchemy / SQLModel persistence, and ETL/ELT pipelines.
 - `config.yaml`: Gemini Code Assist for GitHub repository configuration.
 - `styleguide.md`: Gemini Code Assist review style guide.
 

@@ -42,3 +42,5 @@ uvicorn==0.39.0
 uvloop==0.23.0
 watchfiles==1.1.1
 websockets==15.0.1
+sqlmodel==0.0.22
+python-dotenv==1.2.1
