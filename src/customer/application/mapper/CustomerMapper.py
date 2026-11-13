@@ -1,13 +1,12 @@
-from uuid import uuid4
+from src.customer.application.dto.customer_create_request import CustomerCreateRequest
 
 from ...application.dto.customer_request import CustomerRequest
 from ...application.dto.customer_response import CustomerResponse
 from ...domain.model.Customer import Customer
 
-def request_to_domain(request: CustomerRequest) -> Customer:
-    id = uuid4()
+def request_to_domain(request: CustomerCreateRequest) -> Customer:
+
     return Customer(
-        id=str(id),
         name=request.name,
         description=request.description,
         email=str(request.email),

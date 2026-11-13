@@ -1,6 +1,8 @@
 from fastapi import FastAPI
+from src.customer.infrastructure.repositories.in_memory_customer_repository import InMemoryCustomerRepository
 from src.customer.application.CustomerUseCases import CustomerUseCases
-from src.customer.application.dto.customer_request import CustomerRequest
+from src.customer.application.dto.customer_create_request import CustomerCreateRequest
+from src.customer.application.dto.customer_response import CustomerResponse
 from src.invoice.application.dto.invoice_request import InvoiceRequest
 from src.transaction.application.dto.transaction_request import TransactionRequest
 from src.transaction.application.TransactionUseCases import TransactionUseCases
@@ -9,10 +11,17 @@ from src.invoice.application.InvoiceUseCases import InvoiceUseCases
 
 
 app = FastAPI()
-@app.post('/customers')
-async def create_customer(customer: CustomerRequest):
-    customer_use_cases = CustomerUseCases(None)
-    return customer_use_cases.create_customer(customer)
+in_memory_customer_repository = InMemoryCustomerRepository()
+@app.post('/customers', response_model=CustomerResponse)
+async def create_customer(customer: CustomerCreateRequest):
+    customer_validated = CustomerCreateRequest.model_validate(customer.model_dump())
+    customer_use_cases = CustomerUseCases(None, in_memory_customer_repository)
+    return customer_use_cases.create_customer(customer_validated)
+
+@app.get('/customers', response_model=list[CustomerResponse])
+async def get_customers():
+    customer_use_cases = CustomerUseCases(None, in_memory_customer_repository)
+    return customer_use_cases.get_customers()
 
 @app.post('/transactions')
 async def create_transaction(transaction: TransactionRequest):
