@@ -1,0 +1,42 @@
+name: Mirror to GitLab 🦊
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "**"
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+    steps:
+      - name: Checkout full repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH 🔑
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITLAB_SSH_PRIVATE_KEY_B64 }}" | base64 -d > ~/.ssh/gitlab_mirror_key
+          chmod 600 ~/.ssh/gitlab_mirror_key
+          ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+
+      - name: Debug private key file safely
+        run: |
+          echo "File exists?"
+          ls -la ~/.ssh/gitlab_mirror_key
+          echo "First line:"
+          head -n 1 ~/.ssh/gitlab_mirror_key
+          echo "Last line:"
+          tail -n 1 ~/.ssh/gitlab_mirror_key
+          echo "Validate key:"
+          ssh-keygen -y -f ~/.ssh/gitlab_mirror_key > /dev/null
+      - name: Push mirror to GitLab 🪞 🦊
+        run: |
+              git remote add gitlab git@gitlab.com:caprilespe/python-customer-api.git
+              GIT_SSH_COMMAND="ssh -i ~/.ssh/gitlab_mirror_key -o StrictHostKeyChecking=yes" git push gitlab --all
+              GIT_SSH_COMMAND="ssh -i ~/.ssh/gitlab_mirror_key -o StrictHostKeyChecking=yes" git push gitlab --tags

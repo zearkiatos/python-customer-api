@@ -1,5 +1,5 @@
 from uuid import uuid4
-from src.customer.domain.model import Customer
+from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 
 class InMemoryCustomerRepository(CustomerRepository):
@@ -9,13 +9,14 @@ class InMemoryCustomerRepository(CustomerRepository):
     def get(self) -> list[Customer]:
         return self.customers
 
-    def get_by_id(self, id: str) -> Customer:
+    def get_by_id(self, id: str) -> Customer | None:
         for customer in self.customers:
             if customer.id == id:
                 return customer
         return None
 
-    def save(self, customer: Customer) -> None:
+    def save(self, customer: Customer) -> Customer:
         customer.id = str(uuid4())
             
         self.customers.append(customer)
+        return customer

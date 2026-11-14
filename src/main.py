@@ -1,6 +1,6 @@
 from typing import Annotated
-
-from fastapi import Depends, FastAPI
+from http import HTTPStatus as HttpStatus
+from fastapi import Depends, FastAPI, HTTPException
 from src.core.dependencies import get_customer_use_cases
 from src.customer.infrastructure.repositories.in_memory_customer_repository import InMemoryCustomerRepository
 from src.customer.application.CustomerUseCases import CustomerUseCases
@@ -17,13 +17,20 @@ app = FastAPI()
 in_memory_customer_repository = InMemoryCustomerRepository()
 CustomerUseCasesDep = Annotated[CustomerUseCases, Depends(get_customer_use_cases)]
 @app.post('/customers', response_model=CustomerResponse)
-async def create_customer(customer: CustomerCreateRequest, customer_use_cases: CustomerUseCasesDep = Depends(get_customer_use_cases)):
+async def create_customer(customer: CustomerCreateRequest, customer_use_cases: CustomerUseCasesDep):
     customer_validated = CustomerCreateRequest.model_validate(customer.model_dump())
     return customer_use_cases.create_customer(customer_validated)
 
 @app.get('/customers', response_model=list[CustomerResponse])
-async def get_customers(customer_use_cases: CustomerUseCasesDep = Depends(get_customer_use_cases)):
+async def get_customers(customer_use_cases: CustomerUseCasesDep):
     return customer_use_cases.get_customers()
+
+@app.get('/customers/{id}', response_model=CustomerResponse)
+async def get_customer(id: str, customer_use_cases: CustomerUseCasesDep):
+    try:
+        return customer_use_cases.get_customer_by_id(id)
+    except ValueError as e:
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, error_message=str(e))
 
 @app.post('/transactions')
 async def create_transaction(transaction: TransactionRequest):

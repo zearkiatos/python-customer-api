@@ -9,3 +9,6 @@ class CustomerInputPort(Protocol):
 
     def get_customers(self) -> list[CustomerResponse]:
         ...
+
+    def get_customer_by_id(self, id: str) -> CustomerResponse | None:
+        ...

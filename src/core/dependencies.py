@@ -13,7 +13,7 @@ config = Config()
 
 @lru_cache
 def get_engine():
-    url = config.DATABASE_URL
+    url = f"sqlite:///{config.DATABASE_NAME}.{config.ENVIRONMENT}.sqlite3"
     engine = create_engine(url, connect_args={"check_same_thread": False})
     SQLModel.metadata.create_all(engine)
     return engine

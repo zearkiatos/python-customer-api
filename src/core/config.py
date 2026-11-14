@@ -13,5 +13,5 @@ else:
 
 class Config:
     ENVIRONMENT = environment
-    DATABASE_URL=os.getenv('DATABASE_URL')
+    DATABASE_NAME=os.getenv('DATABASE_NAME')
     DEPENDENCY_DATABASE_TYPE=os.getenv('DEPENDENCY_DATABASE_TYPE')

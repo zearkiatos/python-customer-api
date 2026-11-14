@@ -8,5 +8,5 @@ class CustomerRepository(Protocol):
     def get_by_id(self, id: str) -> Customer | None:
         ...
 
-    def save(self, customer: Customer) -> None:
+    def save(self, customer: Customer) -> Customer:
         ...
