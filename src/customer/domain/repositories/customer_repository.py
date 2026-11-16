@@ -10,3 +10,9 @@ class CustomerRepository(Protocol):
 
     def save(self, customer: Customer) -> Customer:
         ...
+
+    def delete(self, id: str) -> None:
+        ...
+
+    def update(self, customer: Customer) -> Customer | None:
+        ...

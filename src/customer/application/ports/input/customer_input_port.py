@@ -12,3 +12,9 @@ class CustomerInputPort(Protocol):
 
     def get_customer_by_id(self, id: str) -> CustomerResponse | None:
         ...
+
+    def delete_customer(self, id: str) -> None:
+        ...
+
+    def update_customer(self, id: str, customer_data: CustomerRequest) -> CustomerResponse:
+        ...

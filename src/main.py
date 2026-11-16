@@ -30,7 +30,23 @@ async def get_customer(id: str, customer_use_cases: CustomerUseCasesDep):
     try:
         return customer_use_cases.get_customer_by_id(id)
     except ValueError as e:
-        raise HTTPException(status_code=HttpStatus.NOT_FOUND, error_message=str(e))
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
+
+@app.delete('/customers/{id}')
+async def delete_customer(id: str, customer_use_cases: CustomerUseCasesDep):
+    try:
+        customer_use_cases.delete_customer(id)
+        return {"message": f"Customer with id {id} deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
+
+@app.put('/customers/{id}')
+async def update_customer(id: str, customer: CustomerCreateRequest, customer_use_cases: CustomerUseCasesDep):
+    try:
+        customer_validated = CustomerCreateRequest.model_validate(customer.model_dump())
+        return customer_use_cases.update_customer(id, customer_validated)
+    except ValueError as e:
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
 
 @app.post('/transactions')
 async def create_transaction(transaction: TransactionRequest):

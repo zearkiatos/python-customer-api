@@ -20,3 +20,13 @@ class InMemoryCustomerRepository(CustomerRepository):
             
         self.customers.append(customer)
         return customer
+
+    def delete(self, id: str) -> None:
+        self.customers.remove(next(customer for customer in self.customers if customer.id == id))
+
+    def update(self, customer: Customer) -> Customer | None:
+        for i, existing_customer in enumerate(self.customers):
+            if existing_customer.id == customer.id:
+                self.customers[i] = customer
+                return customer
+        return None

@@ -52,3 +52,24 @@ class SqliteCustomerRepository(CustomerRepository):
 
         self.session.refresh(customer_table)
         return self._to_domain(customer_table)
+
+    def delete(self, id: str) -> None:
+        customer = self.session.get(CustomerTable, id)
+        if customer:
+            self.session.delete(customer)
+            self.session.commit()
+
+    def update(self, customer: Customer) -> Customer | None:
+        customer_table = self.session.get(CustomerTable, customer.id)
+        if not customer_table:
+            return None
+
+        customer_table.name = customer.name
+        customer_table.email = customer.email
+        customer_table.description = customer.description
+        customer_table.age = customer.age
+
+        self.session.add(customer_table)
+        self.session.commit()
+        self.session.refresh(customer_table)
+        return self._to_domain(customer_table)

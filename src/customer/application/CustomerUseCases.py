@@ -27,3 +27,18 @@ class CustomerUseCases:
         if not customer:
             raise ValueError(f"Customer with id {id} not found")
         return CustomerMapper.domain_to_response(customer)
+
+    def delete_customer(self, id: str) -> None:
+        customer = self.customer_repository.get_by_id(id)
+        if not customer:
+            raise ValueError(f"Customer with id {id} not found")
+        self.customer_repository.delete(id)
+
+    def update_customer(self, id: str, customer_data: CustomerCreateRequest) -> CustomerResponse:
+        customer = CustomerMapper.request_to_domain(customer_data)
+        customer.id = id
+        customer_updated = self.customer_repository.update(customer)
+
+        if not customer_updated:
+            raise ValueError(f"Customer with id {id} not found")
+        return CustomerMapper.domain_to_response(customer_updated)
