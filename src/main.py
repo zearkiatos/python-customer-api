@@ -40,7 +40,7 @@ async def delete_customer(id: str, customer_use_cases: CustomerUseCasesDep):
     except ValueError as e:
         raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
 
-@app.put('/customers/{id}')
+@app.patch('/customers/{id}', status_code=HttpStatus.CREATED)
 async def update_customer(id: str, customer: CustomerCreateRequest, customer_use_cases: CustomerUseCasesDep):
     try:
         customer_validated = CustomerCreateRequest.model_validate(customer.model_dump())

@@ -2,6 +2,7 @@
 This is a python 🐍 API built with fastAPI ⚡️ to management clients 👤, subscriptions
 
 ![Github](https://github.com/zearkiatos/python-customer-api/actions/workflows/action.yml/badge.svg)
+![GitlabCI](https://gitlab.com/caprilespe/python-customer-api/badges/develop/pipeline.svg)
 
 # Made with
 [![Python](https://img.shields.io/badge/python-2b5b84?style=for-the-badge&logo=python&logoColor=white&labelColor=000000)]()
