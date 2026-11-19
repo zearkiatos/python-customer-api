@@ -2,10 +2,15 @@ language: python
 services:
   - docker
 python:
-  - '3.17'
+  - '3.13'
 git:
   depth: 3
 script:
+  - echo "Installing dependencies 📦"
+  - make install
+  - echo "Running tests 🧪"
+  - make tests
+  - echo "Building Docker image 🐳"
   - docker build . -t=python-customer-api:build-$TRAVIS_BUILD_NUMBER
 on:
   branch: develop

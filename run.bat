@@ -20,6 +20,10 @@ exit /b 0
 fastapi dev src/main.py
 exit /b 0
 
+:tests
+python -m pytest -q
+exit /b 0
+
 :docker-local-up
 docker-compose -f docker-compose.local.yaml up -d --build
 exit /b 0

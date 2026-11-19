@@ -61,3 +61,7 @@ kube_local_down () {
     kubectl delete -f kubernetes/local/services.yaml
     kubectl delete -f kubernetes/local/deployments.yaml
 }
+
+tests () {
+    python -m pytest -q
+}

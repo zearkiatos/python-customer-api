@@ -1,0 +1,35 @@
+image: python:alpine3.13
+
+stages:
+  - tests
+  - docker-build
+
+tests:
+  stage: tests
+  script:
+    - echo "Install dependencies 📦"
+    - make install
+    - echo "Running tests 🧪"
+    - make tests
+
+build:docker:
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    CRYPTOGRAPHY_DONT_BUILD_RUST: 1
+  services:
+  - docker:dind
+  stage: docker-build
+  environment: staging
+  cache:
+    paths:
+      - node_modules/
+  dependencies:
+    - tests
+  script:
+    - echo "Build docker 🐳"
+    - docker build . -t=python-customer-api:build-${CI_PIPELINE_IID}
+  artifacts:
+    expire_in: 1hr
+    paths:
+      - build
