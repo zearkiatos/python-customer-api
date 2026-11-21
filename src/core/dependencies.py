@@ -23,7 +23,11 @@ def get_engine():
     SQLModel.metadata.create_all(engine)
     return engine
 
-def get_session() -> Iterator[Session]:
+def get_session() -> Iterator[Session | None]:
+    if config.DEPENDENCY_DATABASE_TYPE != "sqlite":
+        yield None
+        return
+    
     with Session(get_engine()) as session:
         yield session
 
@@ -41,6 +45,8 @@ def get_database_customer_repository(
     if database_type == "memory":
         return _in_memory_customer_repository()
     if database_type == "sqlite":
+        if session is None:
+            raise RuntimeError("SQLite requires a database session")
         return _sqlite_customer_repository(session)
     else:
         return _in_memory_customer_repository()
@@ -59,6 +65,8 @@ def get_database_transaction_repository(
     if database_type == "memory":
         return _in_memory_transaction_repository()
     if database_type == "sqlite":
+        if session is None:
+            raise RuntimeError("SQLite requires a database session")
         return _sqlite_transaction_repository(session)
     else:
         return _in_memory_transaction_repository()
