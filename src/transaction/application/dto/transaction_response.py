@@ -4,3 +4,4 @@ class TransactionResponse(BaseModel):
     id: str
     amount: str
     description: str
+    customer_id: str

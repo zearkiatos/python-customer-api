@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 
-from src.transaction.application.TransactionUseCases import TransactionUseCases
-from src.transaction.application.dto.transaction_request import TransactionRequest
+from src.invoice.application.dto.invoice_request import InvoiceRequest
+from src.invoice.application.InvoiceUseCases import InvoiceUseCases
 
 router = APIRouter()
 
-@router.post('/transactions', tags=["transaction"])
-async def create_transaction(transaction: TransactionRequest):
-    transaction_use_cases = TransactionUseCases(None)
-    return transaction_use_cases.create_transaction(transaction)
+@router.post('/invoices', tags=["invoice"])
+async def create_invoice(invoice: InvoiceRequest):
+    invoice_use_cases = InvoiceUseCases(None, None)
+    return invoice_use_cases.create_invoice(invoice)

@@ -9,3 +9,6 @@ class TransactionInputPort(Protocol):
 
     def get_transaction(self, transaction_id: str) -> TransactionResponse:
         ...
+
+    def get_transactions(self) -> list[TransactionResponse]:
+        ...

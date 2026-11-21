@@ -9,12 +9,14 @@ def request_to_domain(request: TransactionRequest) -> Transaction:
     return Transaction(
         id=str(id),
         amount=request.amount,
-        description=request.description
+        description=request.description,
+        customer_id=request.customer_id
     )
 
 def domain_to_response(domain: Transaction) -> TransactionResponse:
     return TransactionResponse(
         id=domain.id,
         amount=str(domain.amount),
-        description=domain.description
+        description=domain.description,
+        customer_id=domain.customer_id
     )

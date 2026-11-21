@@ -1,5 +1,5 @@
 from uuid import uuid4
-from sqlmodel import SQLModel, Session, Field, select
+from sqlmodel import Relationship, SQLModel, Session, Field, select
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 
@@ -11,6 +11,7 @@ class CustomerTable(SQLModel, table=True):
     email: str = Field(default=None)
     description: str = Field(default=None)
     age: int = Field(default=0)
+    transactions: list["TransactionTable"] = Relationship(back_populates="customer")
 
 class SqliteCustomerRepository(CustomerRepository):
     def __init__(self, session: Session):
