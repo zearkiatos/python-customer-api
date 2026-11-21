@@ -22,6 +22,7 @@ def test_given_api_router_when_included_then_registers_all_context_endpoints() -
         ("/customers/{id}", "DELETE"),
         ("/customers/{id}", "PATCH"),
         ("/transactions", "POST"),
+        ("/transactions", "GET"),
         ("/invoices", "POST"),
     }
 
