@@ -8,7 +8,7 @@ from src.transaction.application.dto.transaction_response import TransactionResp
 from src.core.dependencies import get_transaction_use_cases
 
 from src.invoice.infrastructure.adapters.transaction_lookup_adapter import TransactionLookupAdapter
-from src.transaction.application import TransactionUseCases
+from src.transaction.application.TransactionUseCases import TransactionUseCases
 from src.transaction.application.dto.transaction_request import TransactionRequest
 from src.transaction.application.errorHandler.customer_not_found_exception import CustomerNotFoundException
 

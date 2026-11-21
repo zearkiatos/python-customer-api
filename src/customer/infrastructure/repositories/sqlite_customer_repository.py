@@ -3,6 +3,13 @@ from sqlmodel import Relationship, SQLModel, Session, Field, select
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 
+class CustomerPlanTable(SQLModel, table=True):
+    __tablename__ = "customer_plans"
+
+    id: str = Field(primary_key=True, default_factory=lambda: str(uuid4()))
+    customer_id: str = Field(foreign_key="customers.id")
+    plan_id: str = Field(foreign_key="plans.id")
+
 class CustomerTable(SQLModel, table=True):
     __tablename__ = "customers"
 
@@ -12,6 +19,7 @@ class CustomerTable(SQLModel, table=True):
     description: str = Field(default=None)
     age: int = Field(default=0)
     transactions: list["TransactionTable"] = Relationship(back_populates="customer")
+    plans: list["PlanTable"] = Relationship(back_populates="customers", link_model=CustomerPlanTable)
 
 class SqliteCustomerRepository(CustomerRepository):
     def __init__(self, session: Session):
