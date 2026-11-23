@@ -1,5 +1,6 @@
 from uuid import uuid4
 from sqlmodel import Relationship, SQLModel, Session, Field, select
+from src.customer.domain.model.CustomerPlan import CustomerPlan
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 
@@ -44,6 +45,21 @@ class SqliteCustomerRepository(CustomerRepository):
             age=table.age
         )
 
+    @staticmethod
+    def _to_plan_domain(table: CustomerPlanTable) -> CustomerPlan:
+        return CustomerPlan(
+            id=table.id,
+            customer_id=table.customer_id,
+            plan_id=table.plan_id
+        )
+
+    @staticmethod
+    def _to_plan_table(customer_plan: CustomerPlan) -> CustomerPlanTable:
+        return CustomerPlanTable(
+            customer_id=customer_plan.customer_id,
+            plan_id=customer_plan.plan_id
+        )
+
     def get(self) -> list[Customer]:
         customers = self.session.exec(select(CustomerTable)).all()
         return [self._to_domain(customer) for customer in customers]
@@ -82,3 +98,18 @@ class SqliteCustomerRepository(CustomerRepository):
         self.session.commit()
         self.session.refresh(customer_table)
         return self._to_domain(customer_table)
+
+    def subscribe_to_plan(self, customer_id: str, plan_id: str) -> CustomerPlan:
+        subscription = CustomerPlanTable(
+            customer_id=customer_id,
+            plan_id=plan_id
+        )
+        self.session.add(subscription)
+        self.session.commit()
+        self.session.refresh(subscription)
+
+        return self._to_plan_domain(subscription)
+
+    def get_plans_by_customer_id(self, customer_id: str) -> list[CustomerPlan]:
+        plans = self.session.exec(select(CustomerPlanTable).where(CustomerPlanTable.customer_id == customer_id)).all()
+        return [self._to_plan_domain(plan) for plan in plans]

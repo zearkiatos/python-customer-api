@@ -1,6 +1,4 @@
 from src.customer.application.dto.customer_create_request import CustomerCreateRequest
-
-from ...application.dto.customer_request import CustomerRequest
 from ...application.dto.customer_response import CustomerResponse
 from ...domain.model.Customer import Customer
 

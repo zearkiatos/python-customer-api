@@ -5,9 +5,14 @@ from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 from src.customer.application.CustomerUseCases import CustomerUseCases
 from src.customer.domain.repositories.customer_repository import CustomerRepository
+from src.customer.infrastructure.adapters.plan_lookup_adapter import PlanLookupAdapter
 from src.customer.infrastructure.repositories.in_memory_customer_repository import InMemoryCustomerRepository
 from src.customer.infrastructure.repositories.sqlite_customer_repository import SqliteCustomerRepository
 from src.core.config import Config
+from src.plan.application.PlanUseCases import PlanUseCases
+from src.plan.domain.repositories.plan_repository import PlanRepository
+from src.plan.infrastructure.repositories.in_memory_plan_repository import InMemoryPlanRepository
+from src.plan.infrastructure.repositories.sqlite_plan_repository import SqlitePlanRepository
 from src.transaction.application.TransactionUseCases import TransactionUseCases
 from src.transaction.domain.repositories.transaction_repository import TransactionRepository
 from src.transaction.infrastructure.adapters.customer_lookup_adapter import CustomerLookupAdapter
@@ -71,10 +76,43 @@ def get_database_transaction_repository(
     else:
         return _in_memory_transaction_repository()
 
+
+@lru_cache
+def _in_memory_plan_repository() -> InMemoryPlanRepository:
+    return InMemoryPlanRepository()
+
+def _sqlite_plan_repository(session: Session) -> SqlitePlanRepository:
+    return SqlitePlanRepository(session)
+
+def get_database_plan_repository(
+    session: Annotated[Session, Depends(get_session)],
+) -> PlanRepository:
+    database_type = config.DEPENDENCY_DATABASE_TYPE
+    if database_type == "memory":
+        return _in_memory_plan_repository()
+    if database_type == "sqlite":
+        if session is None:
+            raise RuntimeError("SQLite requires a database session")
+        return _sqlite_plan_repository(session)
+    else:
+        return _in_memory_plan_repository()
+
+def get_plan_use_cases(
+    repository: Annotated[PlanRepository, Depends(get_database_plan_repository)],
+) -> PlanUseCases:
+    return PlanUseCases(repository)
+
+def get_plan_use_cases(
+    repository: Annotated[PlanRepository, Depends(get_database_plan_repository)],
+) -> PlanUseCases:
+    return PlanUseCases(repository)
+
 def get_customer_use_cases(
     repository: Annotated[CustomerRepository, Depends(get_database_customer_repository)],
+    plan_use_cases: Annotated[PlanUseCases, Depends(get_plan_use_cases)],
 ) -> CustomerUseCases:
-    return CustomerUseCases(None, repository)
+    adapter = PlanLookupAdapter(plan_use_cases)
+    return CustomerUseCases(None, repository, plan_lookup_port=adapter)
 
 def get_transaction_use_cases(
     repository: Annotated[TransactionRepository, Depends(get_database_transaction_repository)],
