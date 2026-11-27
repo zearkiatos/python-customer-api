@@ -7,6 +7,7 @@ from src.customer.application.errorHandler.PlanNotFoundException import PlanNotF
 from src.customer.application.mapper import CustomerMapper, CustomerPlanMapper
 from src.customer.application.ports.output.plan_lookup_output_port import PlanLookupOutputPort
 from src.customer.domain.repositories.customer_repository import CustomerRepository
+from src.customer.domain.model.CustomerPlan import PLAN_STATE
 
 
 class CustomerUseCases:
@@ -68,3 +69,11 @@ class CustomerUseCases:
         customer_plans = self.customer_repository.get_plans_by_customer_id(customer_id)
 
         return [CustomerPlanMapper.customer_plan_to_response(cp) for cp in customer_plans]
+
+    def get_plans_by_customer_id_and_state(self, customer_id: str, state: str) -> list[CustomerPlanResponse]:
+        customer = self.customer_repository.get_by_id(customer_id)
+        if not customer:
+            raise ValueError(f"Customer with id {customer_id} not found")
+        if state.upper() not in PLAN_STATE:
+            raise ValueError(f"Invalid plan state: {state}")
+        if state 

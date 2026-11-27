@@ -3,6 +3,7 @@ from src.customer.application.dto.customer_plan_response import CustomerPlanResp
 from src.customer.domain.model.CustomerPlan import CustomerPlan
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
+from src.shared.utils.criterial.Filter import Filter
 
 class InMemoryCustomerRepository(CustomerRepository):
     def __init__(self):
@@ -42,3 +43,9 @@ class InMemoryCustomerRepository(CustomerRepository):
 
     def get_plans_by_customer_id(self, customer_id: str) -> list[CustomerPlan]:
         return [cp for cp in self.customer_plans if cp.customer_id == customer_id]
+
+    def get_plans_by_filter(self, filters: list[Filter]) -> list[CustomerPlan]:
+        result = self.customer_plans
+        for f in filters:
+            result = [cp for cp in result if getattr(cp, f.field) == f.value]
+        return result

@@ -1,4 +1,6 @@
 from typing import Protocol
+
+from src.shared.utils.criterial.Filter import Filter
 from ...domain.model.Customer import Customer
 from ...domain.model.CustomerPlan import CustomerPlan
 
@@ -22,4 +24,7 @@ class CustomerRepository(Protocol):
         ...
 
     def get_plans_by_customer_id(self, customer_id: str) -> list[CustomerPlan]:
+        ...
+
+    def get_plans_by_filter(self, filters: list[Filter]) -> list[CustomerPlan]:
         ...

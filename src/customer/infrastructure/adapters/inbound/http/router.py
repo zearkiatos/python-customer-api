@@ -64,3 +64,10 @@ async def get_plans_by_customer_id(customer_id: str, customer_use_cases: Custome
         return customer_use_cases.get_plans_by_customer_id(customer_id)
     except ValueError as e:
         raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
+
+@router.get('/customers/{customer_id}/plans/{state}', response_model=list[CustomerPlanResponse], tags=["customer"])
+async def get_plans_by_customer_id_and_state(customer_id: str, state: str,customer_use_cases: CustomerUseCasesDep):
+    try:
+        return customer_use_cases.get_plans_by_customer_id(customer_id)
+    except ValueError as e:
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
