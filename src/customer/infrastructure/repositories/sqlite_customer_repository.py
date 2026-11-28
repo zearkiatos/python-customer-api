@@ -1,7 +1,11 @@
 from uuid import uuid4
+from sqlalchemy import text
 from sqlmodel import Relationship, SQLModel, Session, Field, select
+from src.customer.domain.model.CustomerPlan import CustomerPlan, CustomerPlanState
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
+from src.shared.utils.criterial.CompareOperator import CompareOperator
+from src.shared.utils.criterial.Filter import Filter
 
 class CustomerPlanTable(SQLModel, table=True):
     __tablename__ = "customer_plans"
@@ -9,6 +13,10 @@ class CustomerPlanTable(SQLModel, table=True):
     id: str = Field(primary_key=True, default_factory=lambda: str(uuid4()))
     customer_id: str = Field(foreign_key="customers.id")
     plan_id: str = Field(foreign_key="plans.id")
+    state: str = Field(
+        default=CustomerPlanState.ACTIVE.name,
+        sa_column_kwargs={"server_default": text("'ACTIVE'")},
+    )
 
 class CustomerTable(SQLModel, table=True):
     __tablename__ = "customers"
@@ -42,6 +50,23 @@ class SqliteCustomerRepository(CustomerRepository):
             email=table.email,
             description=table.description,
             age=table.age
+        )
+
+    @staticmethod
+    def _to_plan_domain(table: CustomerPlanTable) -> CustomerPlan:
+        return CustomerPlan(
+            id=table.id,
+            customer_id=table.customer_id,
+            plan_id=table.plan_id,
+            state=CustomerPlanState[table.state.upper()]
+        )
+
+    @staticmethod
+    def _to_plan_table(customer_plan: CustomerPlan) -> CustomerPlanTable:
+        return CustomerPlanTable(
+            plan_id=customer_plan.plan_id,
+            state=customer_plan.state.name,
+            customer_id=customer_plan.customer_id,
         )
 
     def get(self) -> list[Customer]:
@@ -82,3 +107,44 @@ class SqliteCustomerRepository(CustomerRepository):
         self.session.commit()
         self.session.refresh(customer_table)
         return self._to_domain(customer_table)
+
+    def subscribe_to_plan(self, customer_id: str, plan_id: str) -> CustomerPlan:
+        subscription = CustomerPlanTable(
+            customer_id=customer_id,
+            plan_id=plan_id
+        )
+        self.session.add(subscription)
+        self.session.commit()
+        self.session.refresh(subscription)
+
+        return self._to_plan_domain(subscription)
+
+    def get_plans_by_customer_id(self, customer_id: str) -> list[CustomerPlan]:
+        plans = self.session.exec(select(CustomerPlanTable).where(CustomerPlanTable.customer_id == customer_id)).all()
+        return [self._to_plan_domain(plan) for plan in plans]
+
+    def get_plans_by_filter(self, filters: list[Filter]) -> list[CustomerPlan]:
+        query = select(CustomerPlanTable)
+        for filter in filters:
+            if filter.operator == CompareOperator.EQUAL:
+                query = query.where(getattr(CustomerPlanTable, filter.field) == filter.value)
+            if filter.operator == CompareOperator.NOT_EQUAL:
+                query = query.where(getattr(CustomerPlanTable, filter.field) != filter.value)
+        plans = self.session.exec(query).all()
+        return [self._to_plan_domain(plan) for plan in plans]
+
+    def update_subscription_state(self, customer_id: str, plan_id: str, state: str) -> CustomerPlan:
+        subscription = self.session.exec(
+            select(CustomerPlanTable).where(
+                CustomerPlanTable.customer_id == customer_id,
+                CustomerPlanTable.plan_id == plan_id
+            )
+        ).first()
+        if not subscription:
+            raise ValueError(f"Customer plan with customer_id {customer_id} and plan_id {plan_id} not found")
+
+        subscription.state = state.upper()
+        self.session.add(subscription)
+        self.session.commit()
+        self.session.refresh(subscription)
+        return self._to_plan_domain(subscription)

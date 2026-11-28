@@ -21,7 +21,7 @@ fastapi dev src/main.py
 exit /b 0
 
 :tests
-python -m pytest -q
+ENVIRONMENT=test python -m pytest -q
 exit /b 0
 
 :docker-local-up

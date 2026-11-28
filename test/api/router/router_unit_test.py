@@ -21,9 +21,16 @@ def test_given_api_router_when_included_then_registers_all_context_endpoints() -
         ("/customers/{id}", "GET"),
         ("/customers/{id}", "DELETE"),
         ("/customers/{id}", "PATCH"),
+        ("/customers/{customer_id}/plans", "GET"),
+        ("/customers/{customer_id}/plans/{state}", "GET"),
+        ("/customers/{customer_id}/plans/{plan_id}", "POST"),
+        ("/customers/{customer_id}/plans/{plan_id}", "PATCH"),
         ("/transactions", "POST"),
         ("/transactions", "GET"),
         ("/invoices", "POST"),
+        ("/plans", "POST"),
+        ("/plans", "GET"),
+
     }
 
     assert registered_endpoints == expected_endpoints

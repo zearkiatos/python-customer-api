@@ -2,20 +2,21 @@
 
 from uuid import uuid4
 
-from pydantic import Field
-from sqlmodel import Relationship, SQLModel, Session
+from sqlmodel import Field,Relationship, SQLModel, Session
 
-from src.customer.infrastructure.repositories.sqlite_customer_repository import CustomerTable
+from src.customer.infrastructure.repositories.sqlite_customer_repository import CustomerPlanTable
 from src.plan.domain.model.Plan import Plan
 from src.plan.domain.repositories.plan_repository import PlanRepository
 
 
 class PlanTable(SQLModel, table=True):
+    __tablename__ = "plans"
+
     id: str = Field(primary_key=True, default_factory=lambda: str(uuid4()))
     name: str = Field(default=None)
     description: str = Field(default=None)
     price: float = Field(default=0)
-    customers: list["CustomerTable"] = Relationship(back_populates="plans", link_model=CustomerTable)
+    customers: list["CustomerTable"] = Relationship(back_populates="plans", link_model=CustomerPlanTable)
 
 class SqlitePlanRepository(PlanRepository):
     def __init__(self, session: Session):
