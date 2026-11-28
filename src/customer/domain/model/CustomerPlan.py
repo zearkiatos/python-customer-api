@@ -5,8 +5,11 @@ class CustomerPlanState(Enum):
     INACTIVE = "inactive"
     
 class CustomerPlan:
-    def __init__(self, id: str, customer_id: str, plan_id: str):
+    def __init__(
+        self, id: str, customer_id: str, plan_id: str,
+        state: CustomerPlanState = CustomerPlanState.ACTIVE,
+    ):
         self.id = id
         self.customer_id = customer_id
         self.plan_id = plan_id
-        self.state = CustomerPlanState.ACTIVE
+        self.state = state

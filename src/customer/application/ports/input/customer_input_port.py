@@ -4,6 +4,7 @@ from src.customer.application.dto.customer_plan_response import CustomerPlanResp
 from src.customer.application.dto.customer_request import CustomerRequest
 from src.customer.application.dto.customer_response import CustomerResponse
 from src.customer.application.dto.subscribe_customer_plan_request import SubscribeCustomerPlanRequest
+from src.customer.application.dto.subscribe_customer_plan_update import SubscribeCustomerPlanUpdate
 
 class CustomerInputPort(Protocol):
     def create_customer(self, customer_data: CustomerRequest) -> CustomerResponse:
@@ -25,4 +26,7 @@ class CustomerInputPort(Protocol):
         ...
 
     def get_plans_by_customer_id(self, customer_id: str) -> list[CustomerPlanResponse]:
+        ...
+
+    def subscribe_customer_plan_update(self, customer_id: str, plan_id: str, subscription_update: SubscribeCustomerPlanUpdate) -> CustomerPlanResponse:
         ...

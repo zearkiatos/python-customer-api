@@ -2,13 +2,14 @@ import os
 from functools import lru_cache
 from typing import Annotated, Iterator
 from fastapi import Depends
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, create_engine
 from src.customer.application.CustomerUseCases import CustomerUseCases
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 from src.customer.infrastructure.adapters.plan_lookup_adapter import PlanLookupAdapter
 from src.customer.infrastructure.repositories.in_memory_customer_repository import InMemoryCustomerRepository
 from src.customer.infrastructure.repositories.sqlite_customer_repository import SqliteCustomerRepository
 from src.core.config import Config
+from src.core.sqlite_schema import initialize_sqlite_schema
 from src.plan.application.PlanUseCases import PlanUseCases
 from src.plan.domain.repositories.plan_repository import PlanRepository
 from src.plan.infrastructure.repositories.in_memory_plan_repository import InMemoryPlanRepository
@@ -25,7 +26,7 @@ config = Config()
 def get_engine():
     url = f"sqlite:///{config.DATABASE_NAME}.{config.ENVIRONMENT}.sqlite3"
     engine = create_engine(url, connect_args={"check_same_thread": False})
-    SQLModel.metadata.create_all(engine)
+    initialize_sqlite_schema(engine)
     return engine
 
 def get_session() -> Iterator[Session | None]:

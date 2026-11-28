@@ -63,5 +63,5 @@ kube_local_down () {
 }
 
 tests () {
-    python -m pytest -q
+    ENVIRONMENT=test python -m pytest -q
 }

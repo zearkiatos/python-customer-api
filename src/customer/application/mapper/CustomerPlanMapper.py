@@ -6,7 +6,8 @@ def customer_plan_to_response(customer_plan: CustomerPlan) -> CustomerPlanRespon
     return CustomerPlanResponse(
         id = customer_plan.id,
         customer_id=customer_plan.customer_id,
-        plan_id=customer_plan.plan_id
+        plan_id=customer_plan.plan_id,
+        state=customer_plan.state.name,
     )
 
 def customer_plan_request_to_domain(customer_id: str, plan_id: str) -> CustomerPlan:

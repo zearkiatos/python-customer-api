@@ -28,3 +28,6 @@ class CustomerRepository(Protocol):
 
     def get_plans_by_filter(self, filters: list[Filter]) -> list[CustomerPlan]:
         ...
+
+    def update_subscription_state(self, customer_id: str, plan_id: str, state: str) -> CustomerPlan:
+        ...

@@ -15,7 +15,7 @@ run:
 	fastapi dev src/main.py
 
 tests:
-	python -m pytest -q
+	ENVIRONMENT=test python -m pytest -q
 
 docker-local-up:
 	docker-compose -f docker-compose.local.yaml up -d --build

@@ -8,6 +8,7 @@ from src.customer.application.dto.customer_create_request import CustomerCreateR
 from src.customer.application.dto.customer_plan_response import CustomerPlanResponse
 from src.customer.application.dto.customer_response import CustomerResponse
 from src.customer.application.dto.subscribe_customer_plan_request import SubscribeCustomerPlanRequest
+from src.customer.application.dto.subscribe_customer_plan_update import SubscribeCustomerPlanUpdate
 from src.customer.application.errorHandler.PlanNotFoundException import PlanNotFoundException
 
 router = APIRouter()
@@ -66,8 +67,17 @@ async def get_plans_by_customer_id(customer_id: str, customer_use_cases: Custome
         raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
 
 @router.get('/customers/{customer_id}/plans/{state}', response_model=list[CustomerPlanResponse], tags=["customer"])
-async def get_plans_by_customer_id_and_state(customer_id: str, state: str,customer_use_cases: CustomerUseCasesDep):
+async def get_plans_by_customer_id_and_state(customer_id: str, state: str, customer_use_cases: CustomerUseCasesDep):
     try:
-        return customer_use_cases.get_plans_by_customer_id(customer_id)
+        return customer_use_cases.get_plans_by_customer_id_and_state(customer_id, state)
     except ValueError as e:
         raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
+
+@router.patch('/customers/{customer_id}/plans/{plan_id}', status_code=HttpStatus.OK, tags=["customer"])
+async def update_subscription_state(plan_update: SubscribeCustomerPlanUpdate, customer_id: str, plan_id: str, customer_use_cases: CustomerUseCasesDep):
+    try:
+        return customer_use_cases.subscribe_customer_plan_update(customer_id, plan_id, plan_update)
+    except ValueError as e:
+        raise HTTPException(status_code=HttpStatus.NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=HttpStatus.INTERNAL_SERVER_ERROR, detail=str(e))

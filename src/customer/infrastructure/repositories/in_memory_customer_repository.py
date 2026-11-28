@@ -1,8 +1,9 @@
 from uuid import uuid4
 from src.customer.application.dto.customer_plan_response import CustomerPlanResponse
-from src.customer.domain.model.CustomerPlan import CustomerPlan
+from src.customer.domain.model.CustomerPlan import CustomerPlan, CustomerPlanState
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
+from src.shared.utils.criterial.CompareOperator import CompareOperator
 from src.shared.utils.criterial.Filter import Filter
 
 class InMemoryCustomerRepository(CustomerRepository):
@@ -45,7 +46,20 @@ class InMemoryCustomerRepository(CustomerRepository):
         return [cp for cp in self.customer_plans if cp.customer_id == customer_id]
 
     def get_plans_by_filter(self, filters: list[Filter]) -> list[CustomerPlan]:
-        result = self.customer_plans
-        for f in filters:
-            result = [cp for cp in result if getattr(cp, f.field) == f.value]
-        return result
+        plans = self.customer_plans
+        for criterion in filters:
+            expected = criterion.value
+            if criterion.field == "state":
+                expected = CustomerPlanState[expected.upper()]
+            if criterion.operator == CompareOperator.EQUAL:
+                plans = [plan for plan in plans if getattr(plan, criterion.field) == expected]
+            elif criterion.operator == CompareOperator.NOT_EQUAL:
+                plans = [plan for plan in plans if getattr(plan, criterion.field) != expected]
+        return list(plans)
+
+    
+    def update_subscription_state(self, customer_id: str, plan_id: str, state: str) -> CustomerPlan:
+        for i, customer_plan in enumerate(self.customer_plans):
+            if customer_plan.customer_id == customer_id and customer_plan.plan_id == plan_id:
+                self.customer_plans[i].state = CustomerPlanState[state.upper()]
+                return self.customer_plans[i]
