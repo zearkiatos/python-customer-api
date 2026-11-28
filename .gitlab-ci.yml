@@ -6,6 +6,8 @@ stages:
 
 tests:
   stage: tests
+  before_script:
+    - apk add --no-cache make
   script:
     - echo "Install dependencies 📦"
     - make install
