@@ -1,7 +1,7 @@
 from uuid import uuid4
 from sqlalchemy import text
 from sqlmodel import Relationship, SQLModel, Session, Field, select
-from src.customer.domain.model.CustomerPlan import CustomerPlan, CustomerPlanState
+from src.customer.domain.model.CustomerPlan import CustomerPlan, CustomerPlanStatus
 from src.customer.domain.model.Customer import Customer
 from src.customer.domain.repositories.customer_repository import CustomerRepository
 from src.shared.utils.criterial.CompareOperator import CompareOperator
@@ -14,7 +14,7 @@ class CustomerPlanTable(SQLModel, table=True):
     customer_id: str = Field(foreign_key="customers.id")
     plan_id: str = Field(foreign_key="plans.id")
     state: str = Field(
-        default=CustomerPlanState.ACTIVE.name,
+        default=CustomerPlanStatus.ACTIVE.name,
         sa_column_kwargs={"server_default": text("'ACTIVE'")},
     )
 
@@ -58,7 +58,7 @@ class SqliteCustomerRepository(CustomerRepository):
             id=table.id,
             customer_id=table.customer_id,
             plan_id=table.plan_id,
-            state=CustomerPlanState[table.state.upper()]
+            state=CustomerPlanStatus[table.state.upper()]
         )
 
     @staticmethod
@@ -128,12 +128,12 @@ class SqliteCustomerRepository(CustomerRepository):
         for filter in filters:
             if filter.operator == CompareOperator.EQUAL:
                 query = query.where(getattr(CustomerPlanTable, filter.field) == filter.value)
-            if filter.operator == CompareOperator.NOT_EQUAL:
+            elif filter.operator == CompareOperator.NOT_EQUAL:
                 query = query.where(getattr(CustomerPlanTable, filter.field) != filter.value)
         plans = self.session.exec(query).all()
         return [self._to_plan_domain(plan) for plan in plans]
 
-    def update_subscription_state(self, customer_id: str, plan_id: str, state: str) -> CustomerPlan:
+    def update_subscription_state(self, customer_id: str, plan_id: str, state: CustomerPlanStatus) -> CustomerPlan:
         subscription = self.session.exec(
             select(CustomerPlanTable).where(
                 CustomerPlanTable.customer_id == customer_id,
@@ -143,7 +143,7 @@ class SqliteCustomerRepository(CustomerRepository):
         if not subscription:
             raise ValueError(f"Customer plan with customer_id {customer_id} and plan_id {plan_id} not found")
 
-        subscription.state = state.upper()
+        subscription.state = state
         self.session.add(subscription)
         self.session.commit()
         self.session.refresh(subscription)
